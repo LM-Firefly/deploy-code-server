@@ -1,0 +1,14 @@
+{
+	"brackets": [
+		["{", "}"]
+	],
+	"comments": {
+		"lineComment": "#"
+	},
+	"autoClosingPairs": [
+		{ "open": "{", "close": "}" },
+	],
+	"surroundingPairs": [
+		["{", "}"],
+	]
+}

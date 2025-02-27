@@ -5,6 +5,8 @@ USER coder
 
 # Apply VS Code settings
 COPY deploy-container/settings.json .local/share/code-server/User/settings.json
+COPY deploy-container/extensions .local/share/code-server/extensions
+COPY deploy-container/.bashrc .bashrc
 
 # Use bash shell
 ENV SHELL=/bin/bash
@@ -29,7 +31,7 @@ RUN sudo chown -R coder:coder /home/coder/.local
 # Install apt packages:
 # RUN sudo apt-get install -y ubuntu-make
 
-# Copy files: 
+# Copy files:
 # COPY deploy-container/myTool /home/coder/myTool
 
 # -----------

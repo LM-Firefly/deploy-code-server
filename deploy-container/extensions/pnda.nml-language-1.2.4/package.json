@@ -1,0 +1,114 @@
+{
+	"name": "nml-language",
+	"displayName": "NewGRF Meta Language",
+	"description": "Adds the NewGRF Meta Language",
+	"author": "spnda",
+	"version": "1.2.4",
+	"publisher": "PNDA",
+	"license": "GPLv2",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/spnda/VSC-NML"
+	},
+	"bugs": {
+		"url": "https://github.com/spnda/VSC-NML/issues"
+	},
+	"engines": {
+		"vscode": "^1.57.0"
+	},
+	"categories": [
+		"Programming Languages"
+	],
+	"keywords": [
+		"nml",
+		"newgrf",
+		"pnml",
+		"lng",
+		"grf",
+		"openttd"
+	],
+	"contributes": {
+		"languages": [
+			{
+				"id": "newgrfml",
+				"aliases": [
+					"nml",
+					"nml",
+					"NewGRF Meta Language",
+					"pnml"
+				],
+				"extensions": [
+					".nml",
+					".pnml"
+				],
+				"configuration": "./syntaxes/newgrfml-language-configuration.json"
+			},
+			{
+				"id": "lng",
+				"aliases": [
+					"LNG",
+					"lng",
+					"NewGRF Language File"
+				],
+				"extensions": [
+					".lng"
+				],
+				"configuration": "./syntaxes/lng-language-configuration.json"
+			}
+		],
+		"grammars": [
+			{
+				"language": "newgrfml",
+				"scopeName": "source.newgrfml",
+				"path": "./syntaxes/newgrfml.tmLanguage.json"
+			},
+			{
+				"language": "lng",
+				"scopeName": "source.lng",
+				"path": "./syntaxes/lng.tmLanguage.json"
+			}
+		],
+		"snippets": [
+			{
+				"language": "newgrfml",
+				"path": "./snippets/newgrfml.json"
+			}
+		]
+	},
+	"files": [
+		"./lib/extension.js",
+		"CHANGELOG.md",
+		"LICENSE"
+	],
+	"activationEvents": [
+		"onLanguage:newgrfml",
+		"onLanguage:lng"
+	],
+	"devDependencies": {
+		"@types/node": "^15.12.2",
+		"@types/vscode": "^1.57.0",
+		"@typescript-eslint/eslint-plugin": "^4.27.0",
+		"@typescript-eslint/parser": "^4.27.0",
+		"eslint-config-standard": "^16.0.3",
+		"eslint-plugin-import": "^2.23.4",
+		"eslint-plugin-node": "^11.1.0",
+		"eslint-plugin-promise": "^5.1.0",
+		"eslint": "^7.28.0",
+		"typescript": "^4.3.2"
+	},
+	"scripts": {
+		"vscode:prepublish": "npm run compile",
+		"compile": "tsc -p ./",
+		"lint": "eslint . --ext .ts,.tsx",
+		"watch": "tsc -watch -p ./"
+	},
+	"main": "./lib/extension.js",
+	"dependencies": {
+		"fs": "0.0.1-security",
+		"readline": "^1.3.0"
+	},
+	"__metadata": {
+		"installedTimestamp": 1737271853720,
+		"size": 2083823
+	}
+}

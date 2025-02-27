@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Git History</title>
+    <style>
+        body {
+            margin-left: 3px;
+            padding-left: 0px;
+        }
+
+        .tree-item {
+            cursor: pointer;
+        }
+
+        .tree-item img {
+            margin-right: 5px;
+            width: 15px;
+            /* 设置图标宽度 */
+            height: 15px;
+            /* 设置图标高度 */
+            vertical-align: top;
+            /* 垂直居中对齐 */
+            transition: transform 0.1s;
+            /* 添加过渡效果 */
+        }
+
+        .top-align-container {
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .center-align-container {
+            display: flex;
+            align-items: center;
+        }
+
+        .center-align-container img,
+        .top-align-container img {
+            margin-right: 5px;
+            width: 15px;
+            height: 15px;
+        }
+
+        .button-container {
+            padding-left: 10px;
+            padding-right: 0px;
+            display: flex;
+            align-items: center;
+        }
+
+        .text-container {
+            white-space: normal;
+            width: 100%;
+            word-wrap: break-word;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            line-clamp: 2;
+            box-orient: vertical;
+        }
+
+        .text-container.expanded {
+            -webkit-line-clamp: unset;
+            line-clamp: unset;
+        }
+
+        .tree-item-content {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+            /* 增加每行的行距 */
+
+            &:hover {
+                background-color: #f0f0f0;
+            }
+        }
+
+        .tree-item-content.selected {
+            border: 1px solid #000;
+            /* 设置边框样式 */
+        }
+
+        .tree-item-content .rotate-90 {
+            transform: rotate(90deg);
+            /* 顺时针旋转90度 */
+        }
+
+        .children-container {
+            margin-left: 10px;
+            display: none;
+        }
+
+        .expanded>.children-container {
+            display: block;
+        }
+
+        .collapsed>.children-container {
+            display: none;
+        }
+
+        ul {
+            margin-top: 5px;
+            list-style-type: none;
+            padding-left: 0px;
+            margin-left: 0px;
+            /* 调整根节点的缩进 */
+        }
+
+        li {
+            margin-left: 0px;
+            padding-left: 0px;
+            /* 调整与左边缘的距离 */
+        }
+
+        .expand-all-button {
+            cursor: pointer;
+            background-color: transparent;
+            border: none;
+            padding: 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .expand-all-button img {
+            width: 15px;
+            height: 15px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="root"></div>
+    <script>
+        const vscode = acquireVsCodeApi();
+        const commandStore = {};
+        const collaspeStore = {};
+        const pathStore = {};
+        const nodeStore = {};
+
+        function getIconPath(iconId) {
+            switch (iconId) {
+                case 'folder':
+                    return "{folderIconPath}"; // 替换为实际的文件夹图标路径
+                case 'file':
+                    return "{fileIconPath}"; // 替换为实际的文件图标路径
+                case 'author':
+                    return "{authorIconPath}"; // 替换为实际的作者图标路径
+                case 'branch':
+                    return "{branchIconPath}"; // 替换为实际的分支图标路径
+                case 'message':
+                    return "{messageIconPath}"; // 替换为实际的提交信息图标路径
+                default:
+                    return '';
+            }
+        }
+
+        const Status = {
+            INDEX_MODIFIED: 0,
+            INDEX_ADDED: 1,
+            INDEX_DELETED: 2,
+            INDEX_RENAMED: 3,
+            INDEX_COPIED: 4,
+
+            MODIFIED: 5,
+            DELETED: 6,
+            UNTRACKED: 7,
+            IGNORED: 8,
+            INTENT_TO_ADD: 9,
+
+            ADDED_BY_US: 10,
+            ADDED_BY_THEM: 11,
+            DELETED_BY_US: 12,
+            DELETED_BY_THEM: 13,
+            BOTH_ADDED: 14,
+            BOTH_DELETED: 15,
+            BOTH_MODIFIED: 16,
+        }
+
+        function getColor(node) {
+            if (node.props && node.props.type === 'File') {
+                switch (node.props.status) {
+                    case Status.INDEX_MODIFIED:
+                        return "color: green;";
+                    case Status.MODIFIED:
+                        return "color: blue;";
+                    case Status.INDEX_DELETED:
+                    case Status.DELETED:
+                        return "color: red;";
+                    case Status.INDEX_ADDED:
+                    case Status.INTENT_TO_ADD:
+                        return "color: green;";
+                    case Status.INDEX_COPIED:
+                    case Status.INDEX_RENAMED:
+                        return "color: orange;";
+                    case Status.UNTRACKED:
+                    case Status.IGNORED:
+                        return "color: gray;";
+                    case Status.BOTH_DELETED:
+                    case Status.ADDED_BY_US:
+                    case Status.DELETED_BY_THEM:
+                    case Status.ADDED_BY_THEM:
+                    case Status.DELETED_BY_US:
+                    case Status.BOTH_ADDED:
+                    case Status.BOTH_MODIFIED:
+                        return "color: purple;";
+                    default:
+                        throw new Error("Unknown git status: " + node.props.status);
+                }
+            }
+            return "";
+        }
+        function expandAll(nodeId) {
+            event.stopPropagation(); // 阻止事件冒泡
+            const treeItem = document.querySelector(`.tree-item-content[node-id="${nodeId}"]`).closest('.tree-item');
+            if (treeItem) {
+                expandTreeItem(treeItem);
+            }
+        }
+
+        function expandTreeItem(treeItem) {
+            const childrenContainer = treeItem.querySelector('.children-container');
+            if (childrenContainer) {
+                treeItem.classList.add('expanded');
+                treeItem.classList.remove('collapsed');
+
+                const iconId = treeItem.querySelector('.tree-item-content').getAttribute('data-icon-id');
+                const img = treeItem.querySelector('.tree-item-content img');
+                if (iconId === 'folder') {
+                    img.classList.add('rotate-90');
+                }
+
+                const nodeId = treeItem.querySelector('.tree-item-content').getAttribute('node-id');
+                const folderPath = pathStore[nodeId];
+                collaspeStore[folderPath] = 'block';
+
+                const childTreeItems = childrenContainer.querySelectorAll('.tree-item');
+                childTreeItems.forEach(childTreeItem => {
+                    expandTreeItem(childTreeItem);
+                });
+            }
+        }
+
+        function collapseAll(nodeId) {
+            event.stopPropagation(); // 阻止事件冒泡
+            const treeItem = document.querySelector(`.tree-item-content[node-id="${nodeId}"]`).closest('.tree-item');
+            if (treeItem) {
+                collapseTreeItem(treeItem);
+            }
+        }
+
+        function collapseTreeItem(treeItem) {
+            const childrenContainer = treeItem.querySelector('.children-container');
+            if (childrenContainer) {
+                treeItem.classList.add('collapsed');
+                treeItem.classList.remove('expanded');
+
+                const iconId = treeItem.querySelector('.tree-item-content').getAttribute('data-icon-id');
+                const img = treeItem.querySelector('.tree-item-content img');
+                if (iconId === 'folder') {
+                    img.classList.remove('rotate-90');
+                }
+
+                const nodeId = treeItem.querySelector('.tree-item-content').getAttribute('node-id');
+                const folderPath = pathStore[nodeId];
+                collaspeStore[folderPath] = 'none';
+
+                const childTreeItems = childrenContainer.querySelectorAll('.tree-item');
+                childTreeItems.forEach(childTreeItem => {
+                    collapseTreeItem(childTreeItem);
+                });
+            }
+        }
+
+        function locateFile(filePath) {
+            const nodeId = nodeStore[filePath];
+            if (nodeId) {
+                const itemContent = document.querySelector(`.tree-item-content[node-id="${nodeId}"]`);
+                if (itemContent) {
+                    // 递归展开所有父文件夹
+                    let parent = itemContent.closest('ul').closest('.tree-item');
+                    while (parent) {
+                        const parentContent = parent.querySelector('.tree-item-content');
+                        if (parentContent) {
+                            const folderPath = pathStore[parentContent.getAttribute('node-id')];
+                            collaspeStore[folderPath] = 'block';
+                            parent.classList.add('expanded');
+                            parent.classList.remove('collapsed');
+                            const iconId = parentContent.getAttribute('data-icon-id');
+                            const img = parentContent.querySelector('img');
+                            if (iconId === 'folder') {
+                                img.classList.add('rotate-90');
+                            }
+                        }
+                        parent = parent.closest('ul').closest('.tree-item');
+                    }
+
+                    // 滚动到该元素位置
+                    itemContent.scrollIntoView({ behavior: 'auto', block: 'center' });
+                    // 添加当前元素的选中状态
+                    itemContent.classList.add('selected');
+                    // 移除其他元素的选中状态
+                    document.querySelectorAll('.tree-item-content.selected').forEach(el => {
+                        if (el !== itemContent) {
+                            el.classList.remove('selected');
+                        }
+                    });
+
+                }
+            }
+        }
+
+        function getNodeId(node) {
+            let nodeId = '';
+            if (node.props) {
+                nodeId = `node-${Math.random().toString(36).substr(2, 9)}`;
+                // 如果是文件，保存命令
+                if (node.props.type === 'File') {
+                    const filePath = node.resourceUri.path;
+                    nodeStore[filePath] = nodeId;
+                    commandStore[nodeId] = node.command;
+                }
+                // 如果是文件夹，保存展开状态
+                if (node.props.type === 'Folder') {
+                    const folderPath = node.props.path;
+                    pathStore[nodeId] = folderPath;
+                    const collaspeState = collaspeStore[folderPath];
+                    if (!collaspeState) {
+                        collaspeStore[folderPath] = "block";
+                    }
+                }
+            }
+            return nodeId;
+        }
+
+        function createHTML(node, commitInfos) {
+            let html = '';
+            let treeHtml = '';
+            let commitHtml = '';
+            if (commitInfos && commitInfos.length > 0) {
+                commitHtml = createCommitHTML(commitInfos);
+                html += commitHtml;
+            }
+
+            if (node) {
+                treeHtml = createTreeHTML(node);
+                html += treeHtml;
+            }
+            return html;
+        }
+
+        function createCommitHTML(commitInfos) {
+            let html = '';
+            commitInfos.forEach(commitInfo => {
+                const hash = commitInfo.hash.substring(0, 6)
+                const date = new Date(commitInfo.date);
+                const dateStr = date.toLocaleString('zh-CN', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                    hour12: false
+                }).replace(/\//g, '-');
+                const authorStr = `${commitInfo.authorName} <${commitInfo.authorEmail}> on ${dateStr}`;
+                const messageStr = commitInfo.message;
+                let branchStr = '';
+                if (commitInfo.branches && commitInfo.branches.length > 0) {
+                    branchStr = commitInfo.branches.join(',');
+                }
+                const nodeId = `commit-${hash}`;
+                // 保存展开状态
+                const index = commitInfos.indexOf(commitInfo);
+                const folderPath = `\git\commit${index}`;
+                pathStore[nodeId] = folderPath;
+                const collaspeState = collaspeStore[folderPath];
+                if (!collaspeState) {
+                    collaspeStore[folderPath] = "block";
+                }
+                const hashIcon = getIconPath('folder');
+                const authorIcon = getIconPath('author');
+                const branchIcon = getIconPath('branch');
+                const messageIcon = getIconPath('message');
+                //commitInfo 标题
+                html += `<li class="tree-item">
+                    <div class="tree-item-content" 
+                        data-icon-id="folder"
+                        node-id="${nodeId}">
+                        <img src="${hashIcon}">
+                        <span> ${hash}</span>
+                    </div>`;
+                //commitInfo 内容
+                //作者信息
+                html += `<ul class="children-container">`;
+                html += `<li class="tree-item">
+                    <div class="tree-item-content" 
+                        data-icon-id="file">
+                        <div class="top-align-container">
+                            <img src="${authorIcon}">
+                            <span>${authorStr}</span>
+                        </div>
+                    </div>
+                </li>`;
+                //分支信息
+                html += `<li class="tree-item">
+                    <div class="tree-item-content" 
+                        data-icon-id="file">
+                        <div class="top-align-container">
+                            <img src="${branchIcon}">
+                            <span>${branchStr}</span>
+                        </div>
+                    </div>
+                </li>`;
+                //提交信息
+                html += `<li class="tree-item">
+                    <div class="tree-item-content" 
+                        data-icon-id="file">
+                        <div class="top-align-container">
+                            <img src="${messageIcon}">
+                            <div class="text-container">
+                                <span>${messageStr}</span>
+                            </div>
+                        </div>
+                    </div>
+                </li>`;
+
+                html += `</ul>`;
+                html += `</li>`;
+            });
+            return html;
+        }
+
+        function createTreeHTML(node) {
+            if (!node) return '';
+            const child = node.child;
+            const iconPath = getIconPath(node.iconPath.id);
+            // console.log("child如下", child);
+            const labelStyle = getColor(node);
+            const nodeId = getNodeId(node);
+            let html = `<li class="tree-item">
+                <div class="tree-item-content" 
+                data-icon-id="${node.iconPath.id}"
+                node-id="${nodeId}">
+                    <div class="center-align-container">
+                        <img src="${iconPath}">
+                        <span style="${labelStyle}">${node.label}</span>`;
+            // 只有当 data-icon-id 为 folder 时才显示 "Expand All" 按钮
+            if (node.iconPath.id === 'folder') {
+                html +=
+                    `<div class = "button-container">
+                        <button class="expand-all-button" onclick="expandAll('${nodeId}', event)">
+                            <img src="{expandIconPath}" alt="Expand All">
+                        </button>
+                        <button class="expand-all-button" onclick="collapseAll('${nodeId}', event)">
+                            <img src="{collapseIconPath}" alt="Collapse All">
+                        </button>
+                    </div>`;
+            }
+            html += "</div></div>";
+            if (child && child.length > 0) {
+                html += `<ul class="children-container">`;
+                child.forEach(child => {
+                    html += createTreeHTML(child);
+                });
+                html += '</ul>';
+            }
+            html += '</li>';
+            return html;
+        }
+
+        function toggleTextContainer(event) {
+            const textContainer = event.target.closest('.text-container');
+            if (textContainer) {
+                textContainer.classList.toggle('expanded');
+            }
+        }
+
+        function toggleExpand(event) {
+            const itemContent = event.target.closest('.tree-item-content');
+            if (itemContent) {
+                const treeItem = itemContent.closest('.tree-item');
+                if (treeItem) {
+                    const folderPath = pathStore[itemContent.getAttribute('node-id')];
+                    const collapseState = collaspeStore[folderPath];
+                    if ("block" === collapseState) {
+                        collaspeStore[folderPath] = 'none';
+                        treeItem.classList.remove('expanded');
+                        treeItem.classList.toggle('collapsed');
+                    } else {
+                        collaspeStore[folderPath] = 'block';
+                        treeItem.classList.remove('collapsed');
+                        treeItem.classList.toggle('expanded');
+                    }
+                }
+
+                // 移除其他元素的选中状态
+                document.querySelectorAll('.tree-item-content.selected').forEach(el => el.classList.remove('selected'));
+                // 添加当前元素的选中状态
+                itemContent.classList.add('selected');
+
+                // 旋转图标
+                const iconId = itemContent.getAttribute('data-icon-id');
+                const img = itemContent.querySelector('img');
+                if (iconId === 'folder') {
+                    img.classList.toggle('rotate-90');
+                }
+
+                // 传递命令给 VS Code
+                const nodeId = itemContent.getAttribute('node-id');
+                const command = commandStore[nodeId];
+                if (command) {
+                    vscode.postMessage({ command: command });
+                }
+            }
+        }
+
+        function initTreeCollapse() {
+            const treeItems = document.querySelectorAll('.tree-item-content');
+            treeItems.forEach(itemContent => {
+                const treeItem = itemContent.closest('.tree-item');
+                if (treeItem) {
+                    const folderPath = pathStore[itemContent.getAttribute('node-id')];
+                    const collapseState = collaspeStore[folderPath];
+                    if ("block" === collapseState) {
+                        treeItem.classList.add('expanded');
+                        // 旋转图标
+                        const iconId = itemContent.getAttribute('data-icon-id');
+                        const img = itemContent.querySelector('img');
+                        if (iconId === 'folder') {
+                            img.classList.toggle('rotate-90');
+                        }
+                    } else {
+                        treeItem.classList.add('collapsed');
+                    }
+                }
+            });
+        }
+
+        window.addEventListener('message', event => {
+            const message = event.data;
+            switch (message.command) {
+                case 'initTreeItems':
+                    const item = message.item;
+                    console.log("webview-items如下", item);
+                    const commitInfos = message.commitInfos;
+                    const root = document.getElementById('root');
+                    root.innerHTML = `<ul>${createHTML(item, commitInfos)}</ul>`;
+                    root.addEventListener('click', toggleExpand);
+                    root.addEventListener('click', toggleTextContainer);
+                    initTreeCollapse();
+                    break;
+                case 'locateFile':
+                    const filePath = message.filePath;
+                    console.log("webview-locateFile如下", filePath);
+                    if (filePath) {
+                        locateFile(filePath);
+                    }
+                    break;
+            }
+        });
+    </script>
+    <script nonce="{nonce}" src="{scriptUri}"></script>
+</body>
+
+</html>

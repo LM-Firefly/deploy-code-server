@@ -1,0 +1,6 @@
+lib/*
+node_modules/*
+lib/nmlc/
+installers/
+package-lock.json
+*.bat

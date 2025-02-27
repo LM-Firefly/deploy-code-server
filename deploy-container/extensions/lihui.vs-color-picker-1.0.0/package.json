@@ -1,0 +1,71 @@
+{
+	"name": "vs-color-picker",
+	"displayName": "VS Color Picker",
+	"description": "A tiny & smart color picker for web developer.",
+	"version": "1.0.0",
+	"publisher": "lihui",
+	"engines": {
+		"vscode": "^1.5.0"
+	},
+	"categories": [
+		"Other"
+	],
+	"activationEvents": [
+		"*"
+	],
+	"main": "./out/src/extension",
+	"contributes": {
+		"commands": [
+			{
+				"command": "extension.vs-color-picker",
+				"title": "VS Color Picker"
+			}
+		],
+		"configuration": {
+			"title": "vs-color-picker",
+			"properties": {
+				"vs-color-picker.autoLaunch": {
+					"type": "boolean",
+					"default": true,
+					"description": "Automatically launch color picker when color edited"
+				},
+				"vs-color-picker.autoLaunchDelay": {
+					"type": "number",
+					"default": 100,
+					"description": "delay before auto launch"
+				}
+			}
+		}
+	},
+	"scripts": {
+		"vscode:prepublish": "msbuild ColorPicker\\ColorPicker.sln && tsc -p ./",
+		"compile": "msbuild ColorPicker\\ColorPicker.sln && tsc -p ./",
+		"postinstall": "node ./node_modules/vscode/bin/install",
+		"package": "vsce package",
+		"publish": "vsce publish minor"
+	},
+	"devDependencies": {
+		"typescript": "^2.5.2",
+		"vscode": "^1.1.5",
+		"@types/node": "^7.0.43"
+	},
+	"icon": "icon.png",
+	"homepage": "https://github.com/leehooi/vs-color-picker/blob/master/README.md",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/leehooi/vs-color-picker.git"
+	},
+	"keywords": [
+		"color",
+		"picker",
+		"html",
+		"css",
+		"less",
+		"style",
+		"palette"
+	],
+	"__metadata": {
+		"installedTimestamp": 1737271819168,
+		"size": 36347
+	}
+}

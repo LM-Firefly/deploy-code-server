@@ -1,0 +1,167 @@
+{
+	"name": "tmlanguage",
+	"displayName": "TextMate Languages",
+	"description": "Syntax highlighter and snippets for JSON/YAML derivitives of TextMate language definition",
+	"version": "1.2.0",
+	"publisher": "pedro-w",
+	"license": "MIT",
+	"engines": {
+		"vscode": "^1.87.0"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/pedro-w/vscode-tmlanguage/"
+	},
+	"bugs": {
+		"url": "https://github.com/pedro-w/vscode-tmlanguage/issues"
+	},
+	"icon": "images/plist_icon.png",
+	"categories": [
+		"Programming Languages",
+		"Snippets"
+	],
+	"keywords": [
+		"Languages",
+		"tmLanguage",
+		"JSON-tmLanguage",
+		"YAML-tmLanguage",
+		"TextMate"
+	],
+	"main": "./dist/main",
+	"extensionDependencies": [
+		"vscode.json-language-features"
+	],
+	"activationEvents": [
+		"onLanguage:tmlanguage"
+	],
+	"contributes": {
+		"configuration": {
+			"type": "object",
+			"title": "tmLanguage library configuration",
+			"properties": {
+				"tmLanguage.replaceExistingFile": {
+					"type": "boolean",
+					"default": true,
+					"description": "Whether the the conversion should overwrite existing files or create a new one"
+				}
+			}
+		},
+		"commands": [
+			{
+				"command": "extension.convertToJsonTml",
+				"title": "Convert to tmLanguage JSON File"
+			},
+			{
+				"command": "extension.convertToYamlTml",
+				"title": "Convert to tmLanguage YAML File"
+			},
+			{
+				"command": "extension.convertToTml",
+				"title": "Convert to tmLanguage PLIST File"
+			},
+			{
+				"command": "extension.convertTo",
+				"title": "Convert to... (auto)"
+			}
+		],
+		"jsonLanguagePartcipants": [
+			{
+				"languageId": "json-tmlanguage"
+			}
+		],
+		"languages": [
+			{
+				"id": "json-tmlanguage",
+				"aliases": [
+					"Sublime Text Syntax Def (JSON)",
+					"json-tmlanguage"
+				],
+				"extensions": [
+					".tmLanguage.json",
+					".JSON-tmLanguage"
+				],
+				"configuration": "./json-tmlanguage.configuration.json"
+			},
+			{
+				"id": "yaml-tmlanguage",
+				"aliases": [
+					"Sublime Text Syntax Def (YAML)",
+					"yaml-tmlanguage"
+				],
+				"extensions": [
+					".tmLanguage.yml",
+					".YAML-tmLanguage",
+					".tmLanguage.yaml"
+				],
+				"configuration": "./yaml-tmlanguage.configuration.json"
+			}
+		],
+		"grammars": [
+			{
+				"language": "json-tmlanguage",
+				"scopeName": "source.json-tmlanguage",
+				"path": "./syntaxes/json-tmlanguage.tmLanguage"
+			},
+			{
+				"language": "yaml-tmlanguage",
+				"scopeName": "source.yaml-tmlanguage",
+				"path": "./syntaxes/yaml-tmlanguage.tmLanguage"
+			},
+			{
+				"scopeName": "source.escapedregexp",
+				"path": "./syntaxes/Regular Expression (Escaped).tmLanguage",
+				"injectTo": [
+					"source.json-tmlanguage"
+				]
+			},
+			{
+				"scopeName": "source.oniregexp",
+				"path": "./syntaxes/Oniguruma Regular Expression.tmLanguage",
+				"injectTo": [
+					"source.yaml-tmlanguage"
+				]
+			}
+		],
+		"snippets": [
+			{
+				"language": "json-tmlanguage",
+				"path": "./snippets/json-tmlanguage.json"
+			},
+			{
+				"language": "yaml-tmlanguage",
+				"path": "./snippets/yaml-tmlanguage.json"
+			}
+		]
+	},
+	"scripts": {
+		"vscode:prepublish": "npm run esbuild-base -- --minify",
+		"esbuild-base": "esbuild ./src/extension.ts --bundle --main-fields=module,main --outfile=dist/main.js --external:vscode --format=cjs --platform=node",
+		"esbuild-compile": "npm run esbuild-base -- --sourcemap",
+		"esbuild-watch": "npm run esbuild-base -- --sourcemap --watch",
+		"compile": "tsc -p ./",
+		"watch": "tsc -watch -p ./",
+		"pretest": "tsc -p ./",
+		"test": "ts-standard && node ./out/test/runTest.js"
+	},
+	"dependencies": {
+		"jsonc-parser": "^3.0.0",
+		"plist": "^3.0.5",
+		"yaml": "^2.2.2"
+	},
+	"devDependencies": {
+		"@types/mocha": "^10.0.0",
+		"@types/node": "^18.15.0",
+		"@types/plist": "^3.0.2",
+		"@types/vscode": "^1.55.0",
+		"@vscode/test-electron": "^2.4",
+		"esbuild": "^0.24.2",
+		"glob": "^11.0.1",
+		"mocha": "^10.0.0",
+		"ts-standard": "^12.0.2",
+		"typescript": "^5.4"
+	},
+	"__metadata": {
+		"installedTimestamp": 1738561500658,
+		"size": 445908
+	}
+}

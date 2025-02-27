@@ -1,0 +1,114 @@
+{
+	"name": "emoji-code",
+	"displayName": "Emoji Code",
+	"description": "Insert escaped Emoji code into a variety of languages",
+	"version": "0.15.1",
+	"publisher": "idleberg",
+	"license": "MIT",
+	"author": {
+		"name": "Jan T. Sott",
+		"url": "http://github.com/idleberg"
+	},
+	"scripts": {
+		"compile": "npm run build",
+		"build": "npm-run-all --parallel build:*",
+		"build:lib": "tsup",
+		"build:resources": "gulp",
+		"dev": "tsup --watch",
+		"fix": "eslint --fix ./src",
+		"lint:ts": "eslint ./src",
+		"lint": "npm-run-all --parallel lint:*",
+		"prepare": "husky",
+		"publish:ovsx": "ovsx publish --no-dependencies",
+		"publish:vsce": "vsce publish --githubBranch main --no-dependencies",
+		"test": "npm run lint",
+		"vscode:prepublish": "npm run build"
+	},
+	"keywords": [
+		"unicode",
+		"emoji",
+		"smileys",
+		"emoticons"
+	],
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/idleberg/vscode-emoji-code"
+	},
+	"homepage": "https://github.com/idleberg/vscode-emoji-code#readme",
+	"bugs": {
+		"url": "https://github.com/idleberg/vscode-emoji-code/issues"
+	},
+	"main": "./lib/extension.js",
+	"activationEvents": [
+		"onStartupFinished"
+	],
+	"icon": "resources/logo.png",
+	"galleryBanner": {
+		"color": "#f76964",
+		"theme": "dark"
+	},
+	"engines": {
+		"vscode": "^1.80.0"
+	},
+	"categories": [
+		"Snippets"
+	],
+	"contributes": {
+		"commands": [
+			{
+				"command": "extension.emoji-code.open-palette",
+				"title": "Emoji Code: Open Palette"
+			}
+		],
+		"configuration": {
+			"type": "object",
+			"title": "emoji-code",
+			"properties": {
+				"emoji-code.legacyMode": {
+					"type": "boolean",
+					"default": false,
+					"markdownDescription": "%legacyMode%",
+					"order": 1
+				}
+			}
+		},
+		"keybindings": [
+			{
+				"key": "alt+shift+j",
+				"mac": "ctrl+shift+j",
+				"command": "extension.emoji-code.open-palette",
+				"when": "editorTextFocus && !editorReadonly"
+			}
+		]
+	},
+	"dependencies": {
+		"emojibase-data": "^16.0.2",
+		"nano-memoize": "^3.0.16",
+		"vscode-get-config": "^0.4.0",
+		"vscode-insert-text": "^1.1.0"
+	},
+	"devDependencies": {
+		"@eslint/js": "^9.19.0",
+		"@types/node": "^20.17.17",
+		"@types/vscode": "1.80.0",
+		"eslint": "9.12.0",
+		"eslint-plugin-jsonc": "^2.19.1",
+		"gulp": "^5.0.0",
+		"gulp-raster": "^0.2.0",
+		"gulp-rename": "^2.0.0",
+		"husky": "^9.1.7",
+		"lint-staged": "^15.4.3",
+		"npm-run-all2": "^6.2.6",
+		"prettier": "^3.4.2",
+		"tsup": "^8.3.6",
+		"typescript": "^5.7.3",
+		"typescript-eslint": "^8.23.0"
+	},
+	"lint-staged": {
+		"*.(json|ts)": "eslint --cache --fix"
+	},
+	"__metadata": {
+		"installedTimestamp": 1739163238306,
+		"size": 927016
+	}
+}

@@ -1,0 +1,190 @@
+{
+	"name": "vscode-dicom",
+	"displayName": "DICOM Tag Dump",
+	"description": "Shows the list of DICOM tags in the editor.",
+	"icon": "icon.png",
+	"version": "1.4.0",
+	"publisher": "smikitky",
+	"engines": {
+		"vscode": "^1.46.0"
+	},
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/smikitky/vscode-dicom-dump"
+	},
+	"bugs": {
+		"url": "https://github.com/smikitky/vscode-dicom-dump/issues"
+	},
+	"categories": [
+		"Other"
+	],
+	"activationEvents": [
+		"onLanguage:dicom",
+		"*"
+	],
+	"main": "./out/extension",
+	"contributes": {
+		"configuration": [
+			{
+				"type": "object",
+				"properties": {
+					"dicom.alwaysShowMenu": {
+						"description": "When true, shows the DICOM dump menus regardless of the file extension.",
+						"type": "boolean"
+					},
+					"dicom.searches": {
+						"description": "Provides a link to your favorite DICOM search engine with the tag name.",
+						"type": "array",
+						"items": {
+							"type": "object",
+							"properties": {
+								"title": {
+									"type": "string",
+									"description": "Link text. Keywords {GGGG}, {gggg}, {EEEE}, {eeee} will be replaced."
+								},
+								"url": {
+									"type": "string",
+									"description": "Link URL. Keywords {GGGG}, {gggg}, {EEEE}, {eeee} will be replaced."
+								}
+							},
+							"required": [
+								"title",
+								"url"
+							]
+						}
+					},
+					"dicom.showPrivateTags": {
+						"description": "Controls the visibility of DICOM private tags. Private tags without specific value representation may not render properly.",
+						"type": "boolean"
+					},
+					"dicom.dictionary": {
+						"description": "The list of known DICOM tags that will be used along with standard tags. Each key must be an 8-digit uppercase hex string representing the DICOM group/element.",
+						"type": "object",
+						"patternProperties": {
+							"^[0-9A-F]{8}$": {
+								"type": "object",
+								"properties": {
+									"vr": {
+										"description": "Value representation name, such as 'SL'.",
+										"type": "string",
+										"pattern": "^[A-Z]{2}$"
+									},
+									"name": {
+										"description": "Element name (camelCase recommended).",
+										"type": "string"
+									},
+									"forceVr": {
+										"description": "Force this VR type for this element. Use with care.",
+										"type": "boolean"
+									}
+								},
+								"required": [
+									"vr",
+									"name"
+								]
+							}
+						},
+						"additionalProperties": false
+					}
+				}
+			}
+		],
+		"commands": [
+			{
+				"command": "dicom.showTags",
+				"title": "DICOM: Dump DICOM tags"
+			},
+			{
+				"command": "dicom.dumpAsJson",
+				"title": "DICOM: Dump DICOM tags as JSON"
+			}
+		],
+		"menus": {
+			"explorer/context": [
+				{
+					"command": "dicom.showTags",
+					"group": "dicom",
+					"when": "resourceLangId == dicom || config.dicom.alwaysShowMenu"
+				},
+				{
+					"command": "dicom.dumpAsJson",
+					"group": "dicom",
+					"when": "resourceLangId == dicom || config.dicom.alwaysShowMenu"
+				}
+			]
+		},
+		"languages": [
+			{
+				"id": "dicom",
+				"extensions": [
+					".dcm",
+					".dicom"
+				],
+				"aliases": [
+					"DICOM",
+					"dcm"
+				]
+			},
+			{
+				"id": "dicom-dump",
+				"extensions": [
+					".dcmdump"
+				],
+				"aliases": [
+					"DICOM dump"
+				]
+			}
+		],
+		"grammars": [
+			{
+				"language": "dicom-dump",
+				"scopeName": "text.dicom-dump",
+				"path": "./syntaxes/dicom-dump.tmLanguage.json"
+			}
+		]
+	},
+	"scripts": {
+		"vscode:prepublish": "rimraf out && webpack --mode production",
+		"compile": "webpack --mode development",
+		"lint": "eslint \"src/**/*.ts\"",
+		"watch": "webpack --mode development",
+		"test": "tsc -p ./ && mocha --ui tdd out/test/encConverter.test.js"
+	},
+	"devDependencies": {
+		"@types/glob": "^7.1.2",
+		"@types/mocha": "^7.0.2",
+		"@types/node": "^14.0.13",
+		"@types/pify": "^3.0.2",
+		"@types/qs": "^6.9.3",
+		"@types/vscode": "^1.46.0",
+		"@typescript-eslint/eslint-plugin": "^3.3.0",
+		"@typescript-eslint/parser": "^3.3.0",
+		"eslint": "^7.3.0",
+		"glob": "^7.1.6",
+		"mocha": "^8.0.1",
+		"prettier": "^2.0.5",
+		"rimraf": "^3.0.2",
+		"ts-loader": "^7.0.5",
+		"typescript": "^3.9.5",
+		"vscode-test": "^1.4.0",
+		"webpack": "^4.43.0",
+		"webpack-cli": "^3.3.12"
+	},
+	"prettier": {
+		"singleQuote": true,
+		"arrowParens": "avoid",
+		"trailingComma": "none"
+	},
+	"dependencies": {
+		"dicom-data-dictionary": "^0.3.1",
+		"dicom-parser": "^1.8.5",
+		"iconv-lite": "^0.6.0",
+		"jconv": "^0.1.5",
+		"qs": "^6.9.4"
+	},
+	"__metadata": {
+		"installedTimestamp": 1737271844512,
+		"size": 1240664
+	}
+}

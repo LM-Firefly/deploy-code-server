@@ -1,0 +1,2 @@
+(()=>{"use strict";var e,t={};e=t,Object.defineProperty(e,"__esModule",{value:!0}),e.InternalConstants=void 0,e.InternalConstants=class{static get LibraryDirectory(){return __dirname}},module.exports=t})();
+//# sourceMappingURL=InternalConstants.cjs.map

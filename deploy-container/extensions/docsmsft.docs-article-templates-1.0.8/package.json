@@ -1,0 +1,163 @@
+{
+	"name": "docs-article-templates",
+	"displayName": "learn-article-templates",
+	"description": "Learn article templates",
+	"icon": "images/docs-logo-ms.png",
+	"aiKey": "f4846ccb-3a94-40b3-b34c-023d6ef9fd4d",
+	"version": "1.0.8",
+	"publisher": "docsmsft",
+	"repository": {
+		"type": "git",
+		"url": "https://ceapex@dev.azure.com/ceapex/Engineering/_git/learn-article-templates"
+	},
+	"license": "MIT",
+	"bugs": {
+		"url": "https://github.com/Microsoft/vscode-docs-authoring/issues"
+	},
+	"homepage": "https://github.com/Microsoft/vscode-docs-authoring",
+	"engines": {
+		"vscode": "^1.71.0"
+	},
+	"categories": [
+		"Other"
+	],
+	"activationEvents": [
+		"onLanguage:markdown",
+		"onLanguage:yaml"
+	],
+	"main": "./dist/extension",
+	"contributes": {
+		"commands": [
+			{
+				"command": "applyTemplate",
+				"title": "Template",
+				"category": "Learn",
+				"icon": "node_modules/octicons/build/svg/file.svg"
+			},
+			{
+				"command": "workbench.action.openSettings2",
+				"title": "Open Settings (JSON)",
+				"category": "Preferences",
+				"description": "Opens the settings JSON file where you can manually make changes."
+			}
+		],
+		"configuration": {
+			"type": "object",
+			"title": "Learn Article Templates Extension Configuration",
+			"properties": {
+				"docs.templates.alias": {
+					"type": "string",
+					"default": "",
+					"description": "Microsoft alias"
+				},
+				"docs.templates.githubid": {
+					"type": "string",
+					"default": "",
+					"description": "GitHub ID"
+				},
+				"docs.templates.template_repo": {
+					"type": "string",
+					"default": "https://github.com/MicrosoftDocs/content-templates/archive/main.zip",
+					"description": "Learn template repo"
+				},
+				"docs.templates.docs_token": {
+					"type": "string",
+					"default": "",
+					"description": "Microsoft Docs token to utilize AI features"
+				},
+				"docs.templates.ai_token": {
+					"type": "string",
+					"default": "",
+					"description": "Azure Open AI token to utilize AI features"
+				}
+			}
+		},
+		"menus": {
+			"commandPalette": [
+				{
+					"command": "applyTemplate",
+					"group": "Learn"
+				}
+			]
+		}
+	},
+	"scripts": {
+		"vscode:prepublish": "webpack --mode production",
+		"webpack": "webpack --mode development",
+		"webpack-dev": "webpack --mode development --watch",
+		"compile": "tsc -p ./",
+		"watch": "tsc -watch -p ./",
+		"prettier": "prettier --write \"**/*.{ts,js,json,yml}\"",
+		"prettier-check": "prettier --check \"**/*.{ts,js,json,yml}\" --loglevel debug",
+		"pretest": "npm run compile",
+		"test": "node ./out/src/test/runTest.js",
+		"lint": "eslint . --ext .ts",
+		"precommit": "pretty-quick --staged --pattern \"**/*.{ts,js,json,yml}\"",
+		"pre-push": "npm run compile && npm run lint"
+	},
+	"husky": {
+		"hooks": {
+			"pre-commit": "pretty-quick --staged --pattern \"**/*.{ts,js,json,yml}\"",
+			"pre-push": "npm run pre-push"
+		}
+	},
+	"dependencies": {
+		"axios": "^1.6.7",
+		"extract-zip": "^2.0.1",
+		"front-matter": "^4.0.2",
+		"js-yaml": "^3.13.1",
+		"node-dir": "^0.1.17",
+		"node-downloader-helper": "^1.0.18",
+		"os": "^0.1.2",
+		"tmp": "^0.2.1",
+		"vscode-extension-telemetry": "^0.1.1"
+	},
+	"devDependencies": {
+		"@types/axios": "^0.14.0",
+		"@types/chai": "^4.2.11",
+		"@types/chai-spies": "^1.0.1",
+		"@types/mocha": "^7.0.2",
+		"@types/node": "^15.6.0",
+		"@types/node-dir": "0.0.32",
+		"@typescript-eslint/eslint-plugin": "^6.21.0",
+		"@vscode/test-electron": "^2.3.9",
+		"chai": "^4.2.0",
+		"chai-spies": "^1.0.0",
+		"eslint": "^8.57.0",
+		"eslint-config-standard-with-typescript": "^43.0.1",
+		"eslint-import-resolver-webpack": "^0.13.2",
+		"eslint-plugin-import": "^2.29.1",
+		"eslint-plugin-n": "^16.6.2",
+		"eslint-plugin-promise": "^6.1.1",
+		"husky": "^4.3.8",
+		"mocha": "^8.0.1",
+		"mocha-junit-reporter": "^2.0.2",
+		"mock-require": "^3.0.3",
+		"nyc": "^15.0.0",
+		"octicons": "^7.4.0",
+		"prettier": "^2.0.5",
+		"pretty-quick": "^3.1.0",
+		"sinon": "^9.0.1",
+		"source-map-support": "^0.5.16",
+		"terser-webpack-plugin": "^5.3.10",
+		"ts-loader": "^6.2.2",
+		"ts-node": "^8.8.1",
+		"tslint": "^5.20.1",
+		"typescript": "^5.4.2",
+		"vscode": "^1.1.37",
+		"webpack": "^5.45.1",
+		"webpack-bundle-analyzer": "^4.4.2",
+		"webpack-cli": "^4.9.2"
+	},
+	"overrides": {
+		"electron-to-chromium": "1.4.702",
+		"caniuse-lite": "1.0.30001597",
+		"minimist": "0.2.4",
+		"minimatch": "3.0.5",
+		"nanoid": "3.1.31"
+	},
+	"__metadata": {
+		"installedTimestamp": 1739527220090,
+		"size": 2165020
+	}
+}

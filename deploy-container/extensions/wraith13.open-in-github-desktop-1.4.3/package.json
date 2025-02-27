@@ -1,0 +1,129 @@
+{
+	"name": "open-in-github-desktop",
+	"displayName": "Open in GitHub Desktop",
+	"description": "Open in GitHub Desktop from VS Code",
+	"icon": "images/open-in-github-desktop.128.png",
+	"version": "1.4.3",
+	"publisher": "wraith13",
+	"license": "SEE LICENSE IN LICENSE_1_0.txt",
+	"engines": {
+		"vscode": "^1.50.0"
+	},
+	"bugs": {
+		"url": "https://github.com/wraith13/open-in-github-desktop-vscode/issues"
+	},
+	"homepage": "https://github.com/wraith13/open-in-github-desktop-vscode/blob/master/README.md",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/wraith13/open-in-github-desktop-vscode.git"
+	},
+	"categories": [
+		"Other"
+	],
+	"keywords": [
+		"GitHub",
+		"GitHub Desktop"
+	],
+	"activationEvents": [
+		"onStartupFinished"
+	],
+	"main": "./out/source/extension.js",
+	"contributes": {
+		"commands": [
+			{
+				"command": "openInGithubDesktop",
+				"title": "%openInGithubDesktop.title%"
+			}
+		],
+		"configuration": [
+			{
+				"title": "Open in GitHub Desktop",
+				"properties": {
+					"openInGithubDesktop.traversalSearchGitConfig": {
+						"type": "boolean",
+						"default": true,
+						"description": "%openInGithubDesktop.traversalSearchGitConfig.description%",
+						"scope": "window"
+					},
+					"openInGithubDesktop.traversalSearchGitConfigForCurrentDocument": {
+						"type": "boolean",
+						"default": true,
+						"description": "%openInGithubDesktop.traversalSearchGitConfigForCurrentDocument.description%",
+						"scope": "window"
+					},
+					"openInGithubDesktop.statusBar.Label": {
+						"type": "string",
+						"default": "$(arrow-right)$(mark-github)",
+						"description": "%openInGithubDesktop.statusBar.Label.description%",
+						"scope": "window"
+					},
+					"openInGithubDesktop.statusBar.Alignment": {
+						"type": "string",
+						"default": "right",
+						"enum": [
+							"none",
+							"left",
+							"right"
+						],
+						"description": "%openInGithubDesktop.statusBar.Alignment.description%",
+						"scope": "window"
+					},
+					"openInGithubDesktop.diagnosticWarning": {
+						"type": "string",
+						"default": "error or warning",
+						"enum": [
+							"none",
+							"error",
+							"error or warning"
+						],
+						"enumDescriptions": [
+							"%openInGithubDesktop.diagnosticWarning.none.description%",
+							"%openInGithubDesktop.diagnosticWarning.error.description%",
+							"%openInGithubDesktop.diagnosticWarning.error or warning.description%"
+						],
+						"description": "%openInGithubDesktop.diagnosticWarning.description%",
+						"scope": "window"
+					},
+					"openInGithubDesktop.unsavedWarning": {
+						"type": "string",
+						"default": "unsaved existing files",
+						"enum": [
+							"none",
+							"unsaved existing files",
+							"unsaved files"
+						],
+						"enumDescriptions": [
+							"%openInGithubDesktop.unsavedWarning.none.description%",
+							"%openInGithubDesktop.unsavedWarning.unsaved existing files.description%",
+							"%openInGithubDesktop.unsavedWarning.unsaved files.description%"
+						],
+						"description": "%openInGithubDesktop.unsavedWarning.description%",
+						"scope": "window"
+					}
+				}
+			}
+		]
+	},
+	"scripts": {
+		"vscode:prepublish": "npm run compile",
+		"compile": "tsc -p ./",
+		"lint": "eslint src --ext ts",
+		"watch": "tsc -watch -p ./"
+	},
+	"dependencies": {
+		"@wraith13/vscel": "^0.0.53"
+	},
+	"devDependencies": {
+		"@types/vscode": "^1.50.0",
+		"@types/node": "^12.11.7",
+		"eslint": "^7.9.0",
+		"@typescript-eslint/eslint-plugin": "^4.1.1",
+		"@typescript-eslint/parser": "^4.1.1",
+		"typescript": "^4.0.2",
+		"vscode-test": "^1.4.0"
+	},
+	"__metadata": {
+		"installedTimestamp": 1737271847799,
+		"size": 102403
+	}
+}

@@ -1,0 +1,132 @@
+{
+	"name": "dupchecker",
+	"displayName": "DupChecker",
+	"description": "Check duplicate lines and remove them if you need to keep the unique lines only",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/jianbingfang/vscode-dup-checker.git"
+	},
+	"homepage": "https://github.com/jianbingfang/vscode-dup-checker",
+	"version": "0.1.7",
+	"license": "MIT",
+	"author": {
+		"name": "Jianbing Fang",
+		"email": "jianbingfang@gmail.com"
+	},
+	"publisher": "jianbingfang",
+	"icon": "images/logo_128x128.png",
+	"engines": {
+		"vscode": "^1.0.0"
+	},
+	"categories": [
+		"Other"
+	],
+	"keywords": [
+		"dupchecker",
+		"dup",
+		"duplicate",
+		"dedup",
+		"unique",
+		"deduplicate",
+		"distinct",
+		"checker"
+	],
+	"activationEvents": [
+		"onCommand:extension.checkDup",
+		"onCommand:extension.checkDupWithTrim",
+		"onCommand:extension.checkDupWithRegex",
+		"onCommand:extension.checkDupForAllFiles"
+	],
+	"main": "./extension",
+	"contributes": {
+		"commands": [
+			{
+				"command": "extension.checkDup",
+				"title": "Check Duplicates"
+			},
+			{
+				"command": "extension.checkDupWithTrim",
+				"title": "Check Duplicates With Trim Condition"
+			},
+			{
+				"command": "extension.checkDupWithRegex",
+				"title": "Check Duplicates With Regex Match"
+			},
+			{
+				"command": "extension.checkDupForAllFiles",
+				"title": "Check Duplicates (For All Files)"
+			}
+		],
+		"configuration": {
+			"title": "DupChecker",
+			"properties": {
+				"dupchecker.trimStart": {
+					"type": "boolean",
+					"default": true,
+					"description": "trim starting white spaces in each line, default: true"
+				},
+				"dupchecker.trimEnd": {
+					"type": "boolean",
+					"default": true,
+					"description": "trim ending white spaces in each line, default: true"
+				},
+				"dupchecker.ignoreCase": {
+					"type": "boolean",
+					"default": false,
+					"description": "ignore case when comparing lines, default: false"
+				},
+				"dupchecker.leaveEmptyLine": {
+					"type": "boolean",
+					"default": false,
+					"description": "leave an empty line after removing duplicates if true, or remove whole line(including line break) if false, default: true"
+				},
+				"dupchecker.removeAllDuplicates": {
+					"type": "boolean",
+					"default": false,
+					"description": "remove all duplicate lines including the first occurrence if true, default: false"
+				},
+				"dupchecker.checkAllFilesInclude": {
+					"type": "string",
+					"default": "**",
+					"description": "GlobPattern for files to include in [Check Duplicates (For All Files)] mode"
+				},
+				"dupchecker.checkAllFilesExclude": {
+					"type": "string",
+					"default": "",
+					"description": "GlobPattern for files to exclude in [Check Duplicates (For All Files)] mode"
+				},
+				"dupchecker.checkAllFilesNumLimit": {
+					"type": "integer",
+					"default": 100,
+					"description": "Maximum number of files to include in [Check Duplicates (For All Files)] mode"
+				}
+			}
+		}
+	},
+	"bugs": {
+		"url": "https://github.com/jianbingfang/vscode-dup-checker/issues",
+		"email": "jianbingfang@gmail.com"
+	},
+	"scripts": {
+		"postinstall": "node ./node_modules/vscode/bin/install",
+		"test": "node ./node_modules/vscode/bin/test"
+	},
+	"devDependencies": {
+		"@types/mocha": "^2.2.42",
+		"@types/node": "^7.0.43",
+		"eslint": "^4.18.2",
+		"typescript": "^2.6.1",
+		"vscode": "^1.1.36"
+	},
+	"dependencies": {
+		"cbor-js": "^0.1.0",
+		"cuckoo-filter": "^1.1.4",
+		"is-glob": "^4.0.1",
+		"lodash": "^4.17.19",
+		"string-hash": "^1.1.3"
+	},
+	"__metadata": {
+		"installedTimestamp": 1737272044584,
+		"size": 5105290
+	}
+}
